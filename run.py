@@ -1,28 +1,45 @@
-from keras.layers import Conv2D, MaxPooling2D, GlobalAveragePooling2D
-from keras.layers import Dropout, Flatten, Dense
-from keras.models import Sequential
-from keras.models import model_from_json
-
-import cv2
-
-from keras.applications.resnet50 import preprocess_input, decode_predictions
-from keras.preprocessing import image                  
-from tqdm import tqdm
-from keras.applications.resnet50 import ResNet50
-from extract_bottleneck_features import *
-
 import numpy as np
 import os
+import cv2
+from keras.models import model_from_json
+from keras.applications.resnet50 import preprocess_input, decode_predictions
+from keras.preprocessing import image
+from keras.applications.resnet50 import ResNet50
+from tqdm import tqdm
+from extract_bottleneck_features import *
+from flask import Flask
+from flask import render_template, request, jsonify
 
-LABELS_PATH = os.path.abspath('dog_names.txt')
+app = Flask(__name__)
 
-with open(LABELS_PATH) as f:
-    labels = f.readlines()
+def load_models():
+    global dog_names
+    global face_cascade
+    global ResNet50_model
+    global VGG19_model
+    
+    # Get labels for dog names
+    labels_path = os.path.abspath('dog_names.txt')
+    with open(labels_path) as f:
+        labels = f.readlines()
+    dog_names = np.array([label.strip() for label in labels])
 
-dog_names = np.array([label.strip() for label in labels])
+    # Extract pre-trained face detector
+    face_cascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_alt.xml')
+    
+    # Define ResNet50 model
+    ResNet50_model = ResNet50(weights='imagenet')
+    
+    # Define VGG19_model architecture.
+    with open('saved_models/VGG19_model.json', 'r') as json_file:
+        loaded_model_json = json_file.read()
+    VGG19_model = model_from_json(loaded_model_json)
 
-# Extract pre-trained face detector
-face_cascade = cv2.CascadeClassifier('haarcascades/haarcascade_frontalface_alt.xml')
+    # Load the model weights.
+    VGG19_model.load_weights('saved_models/weights.best.VGG19.hdf5')
+
+    # Compile the loaded model
+    VGG19_model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
 
 # returns "True" if face is detected in image stored at img_path
 def face_detector(img_path):
@@ -30,9 +47,6 @@ def face_detector(img_path):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     faces = face_cascade.detectMultiScale(gray)
     return len(faces) > 0
-
-# define ResNet50 model
-ResNet50_model = ResNet50(weights='imagenet')
 
 def path_to_tensor(img_path):
     # loads RGB image as PIL.Image.Image type
@@ -55,19 +69,6 @@ def dog_detector(img_path):
     # Detect if an image has a dog or not
     prediction = ResNet50_predict_labels(img_path)
     return ((prediction <= 268) & (prediction >= 151)) 
-
-### Define VGG19_model architecture.
-with open('saved_models/VGG19_model.json', 'r') as json_file:
-    loaded_model_json = json_file.read()
-
-VGG19_model = model_from_json(loaded_model_json)
-
-### TODO: Load the model weights with the best validation loss.
-VGG19_model.load_weights('saved_models/weights.best.VGG19.hdf5')
-
-# compile and evaluate loaded model
-VGG19_model.compile(loss='categorical_crossentropy', optimizer='rmsprop', metrics=['accuracy'])
-
     
 ### Take a path to an image as input
 ### and returns the dog breed that is predicted by the model.
@@ -90,7 +91,32 @@ def dog_breed_pred(path):
     else:
         result = 'There is no human or dog detected in this picture.'
     return result
+
+# index webpage
+@app.route('/')
+@app.route('/index')
+def index():
     
-print (dog_breed_pred('images/Chihuahua.jpg'))
-print (dog_breed_pred('images/bird.jpg'))
-print (dog_breed_pred('images/Shuo.jpg'))
+    # render web page
+    return render_template('master.html')
+
+# web page that shows predicted result
+@app.route('/go')
+def go():
+    # Work in progress. Need help here. I'm trying to call the dog_breed_pred function from the front end, 
+    # but I'm having a ValueError: Tensor Tensor("fc1000/Softmax:0", shape=(?, 1000), dtype=float32) is not an element of this graph.
+    classification_results = dog_breed_pred('images/Chihuahua.jpg')
+    # This will render the go.html Please see that file. 
+    return render_template(
+        'go.html',
+        classification_result=classification_results
+    )
+
+def main():
+    load_models()
+    #Debug: the call below works
+    #print (dog_breed_pred('images/Chihuahua.jpg'))
+    app.run(host='0.0.0.0', port=3001, debug=True)
+
+if __name__ == '__main__':
+    main()
