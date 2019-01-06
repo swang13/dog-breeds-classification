@@ -110,7 +110,7 @@ def index():
 def go():
     # Work in progress. Need help here. I'm trying to call the dog_breed_pred function from the front end, 
     # but I'm having a ValueError: Tensor Tensor("fc1000/Softmax:0", shape=(?, 1000), dtype=float32) is not an element of this graph.
-    #clear_session()
+    clear_session()
     classification_results = dog_breed_pred('images/Chihuahua.jpg')
     # This will render the go.html Please see that file. 
     return render_template(
