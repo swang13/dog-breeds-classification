@@ -10,6 +10,8 @@ from extract_bottleneck_features import *
 from flask import Flask
 from flask import render_template, request, jsonify
 
+from keras.backend import clear_session 
+
 app = Flask(__name__)
 
 def load_models():
@@ -62,7 +64,8 @@ def paths_to_tensor(img_paths):
     
 def ResNet50_predict_labels(img_path):
     # returns prediction vector for image located at img_path
-    img = preprocess_input(path_to_tensor(img_path))
+    img = preprocess_input(path_to_tensor(img_path)) 
+    clear_session()
     return np.argmax(ResNet50_model.predict(img))
 
 def dog_detector(img_path):
@@ -76,12 +79,14 @@ def VGG19_predict_breed(img_path):
     # extract bottleneck features
     bottleneck_feature = extract_VGG19(path_to_tensor(img_path))
     # obtain predicted vector
+    clear_session()
     predicted_vector = VGG19_model.predict(bottleneck_feature)
     # return dog breed that is predicted by the model
     return dog_names[np.argmax(predicted_vector)]
     
 def dog_breed_pred(path):
     # Detect dog or human and run prediction
+    clear_session()
     if dog_detector(path):
         dog_breed = VGG19_predict_breed(path)
         result = 'This dog looks like a ' + dog_breed + '.'
@@ -105,6 +110,7 @@ def index():
 def go():
     # Work in progress. Need help here. I'm trying to call the dog_breed_pred function from the front end, 
     # but I'm having a ValueError: Tensor Tensor("fc1000/Softmax:0", shape=(?, 1000), dtype=float32) is not an element of this graph.
+    #clear_session()
     classification_results = dog_breed_pred('images/Chihuahua.jpg')
     # This will render the go.html Please see that file. 
     return render_template(
