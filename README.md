@@ -45,9 +45,6 @@ Below are main foleders/files for this project:
 2. If a dog image is supplied, the model gives a prediction of the dog breed.
 3. The model is also able to identify the most resembling dog breed of a person.
 
-[image1]: ./images/dog_predition.png "Sample Output"
-[image2]: ./images/dog_predition_2.png "Sample Output"
-[image3]: ./images/cat_prediction.png "Sample Output"
 
 ## Licensing, Authors, Acknowledgements<a name="licensing"></a>
 
