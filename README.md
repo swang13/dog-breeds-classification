@@ -45,6 +45,8 @@ Below are main foleders/files for this project:
 2. If a dog image is supplied, the model gives a prediction of the dog breed.
 3. The model is also able to identify the most resembling dog breed of a person.
 
+Project files can be found in this github repo: https://github.com/swang13/dog-breeds-classification
+More discussions can be found in this blog: https://medium.com/@wangshuocugb2005/dog-breeds-classification-with-cnn-transfer-learning-92217cba3129
 
 ## Licensing, Authors, Acknowledgements<a name="licensing"></a>
 
