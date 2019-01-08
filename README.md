@@ -39,6 +39,10 @@ Below are main foleders/files for this project:
 5. extract_bottleneck_features.py: functions to compute bottleneck features given a tensor converted from an image
 6. images: a few images to test the model manually
 
+Note: 
+The dog image dataset used by this project can be downloaded here: https://s3-us-west-1.amazonaws.com/udacity-aind/dog-project/dogImages.zip
+The human image dataset can be downloaded here: https://s3-us-west-1.amazonaws.com/udacity-aind/dog-project/lfw.zip
+
 ## Results<a name="results"></a>
 
 1. The model was able to reach an accuracy of 72.97% on test data.
