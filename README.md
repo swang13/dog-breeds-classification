@@ -23,7 +23,8 @@ Beyond the Anaconda distribution of Python, the following packages need to be in
 
 ## Project Overview<a name="overview"></a>
 
-In this project, I built and trained a neural network model with CNN (Convolutional Neural Networks) transfer learning, using 8351 dog images of 133 breeds. The trained model can be used by a web or mobile application to process real-world, user-supplied images.  Given an image of a dog, the algorithm will predict the breed of the dog.  If an image of a human is supplied, the code will identify the most resembling dog breed.
+In this project, I built and trained a neural network model with CNN (Convolutional Neural Networks) transfer learning, using 8351 dog images of 133 breeds. CNN is a type of deep neural networks, which is commonly used to analyze image data. Typically, a CNN architecture consists of convolutional layers, activation function, pooling layers, fully connected layers and normalization layers. Transfer learning is a technique that allows a model developed for a task to be reused as the starting point for another task.
+The trained model can be used by a web or mobile application to process real-world, user-supplied images.  Given an image of a dog, the algorithm will predict the breed of the dog.  If an image of a human is supplied, the code will identify the most resembling dog breed.
 
 ## File Descriptions <a name="files"></a>
 
